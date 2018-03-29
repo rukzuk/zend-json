@@ -74,6 +74,14 @@ class Zend_Json
     public static function decode($encodedValue, $objectDecodeType = Zend_Json::TYPE_ARRAY)
     {
         $encodedValue = (string) $encodedValue;
+        // fix for php7 (empty strings result in syntax error for php >= 7.0.0)
+        if (empty($encodedValue)) {
+            if ($objectDecodeType == Zend_Json::TYPE_ARRAY) {
+                return array();
+            } else  {
+                return (object)array();
+            }
+        }
         if (function_exists('json_decode') && self::$useBuiltinEncoderDecoder !== true) {
             $decode = json_decode($encodedValue, $objectDecodeType);
 
